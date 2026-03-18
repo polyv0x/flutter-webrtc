@@ -9,6 +9,8 @@
 #include <memory>
 #include <mutex>
 
+#include "audio_processing_bridge.h"
+
 #include "libwebrtc.h"
 
 #include "rtc_audio_device.h"
@@ -108,6 +110,7 @@ class FlutterWebRTCBase {
   scoped_refptr<RTCVideoDevice> video_device_;
   scoped_refptr<RTCDesktopDevice> desktop_device_;
   scoped_refptr<RTCAudioProcessing> audio_processing_;
+  AudioProcessingAdapter* audio_processing_adapter_;
   RTCConfiguration configuration_;
 
   std::map<std::string, scoped_refptr<RTCPeerConnection>> peerconnections_;

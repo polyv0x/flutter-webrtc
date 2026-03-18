@@ -1,5 +1,7 @@
 #include "flutter_webrtc/flutter_web_r_t_c_plugin.h"
+#include "flutter_webrtc/flutter_webrtc_audio_processing.h"
 
+#include "audio_processing_bridge.h"
 #include "flutter_common.h"
 #include "flutter_webrtc.h"
 #include "task_runner_windows.h"
@@ -81,4 +83,14 @@ void FlutterWebRTCPluginRegisterWithRegistrar(
 
 flutter_webrtc_plugin::FlutterWebRTC* FlutterWebRTCPluginSharedInstance() {
   return g_shared_instance;
-} 
+}
+
+void flutter_webrtc_add_audio_processor(
+    libwebrtc::RTCAudioProcessing::CustomProcessing* processor) {
+  flutter_webrtc_plugin::AudioProcessingAdapter::Instance().AddProcessor(processor);
+}
+
+void flutter_webrtc_remove_audio_processor(
+    libwebrtc::RTCAudioProcessing::CustomProcessing* processor) {
+  flutter_webrtc_plugin::AudioProcessingAdapter::Instance().RemoveProcessor(processor);
+}

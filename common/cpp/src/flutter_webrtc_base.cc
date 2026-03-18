@@ -20,6 +20,8 @@ FlutterWebRTCBase::FlutterWebRTCBase(BinaryMessenger* messenger,
   video_device_ = factory_->GetVideoDevice();
   desktop_device_ = factory_->GetDesktopDevice();
   audio_processing_ = factory_->GetAudioProcessing();
+  audio_processing_adapter_ = &AudioProcessingAdapter::Instance();
+  audio_processing_->SetCapturePostProcessing(audio_processing_adapter_);
   event_channel_ = EventChannelProxy::Create(messenger_, task_runner_, kEventChannelName);
 }
 
