@@ -98,6 +98,7 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
   scoped_refptr<RTCMediaConstraints> audioConstraints;
   std::string sourceId;
   std::string deviceId;
+  RTCAudioOptions audio_options;
   auto it = constraints.find(EncodableValue("audio"));
   if (it != constraints.end()) {
     EncodableValue audio = it->second;
@@ -114,6 +115,19 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
       deviceId = getDeviceIdConstraint(localMap);
       audioConstraints = base_->ParseMediaConstraints(localMap);
       enable_audio = true;
+
+      // Parse audio processing options from constraints so they reach the APM.
+      auto agcIt = localMap.find(EncodableValue("autoGainControl"));
+      if (agcIt != localMap.end() && TypeIs<bool>(agcIt->second))
+        audio_options.auto_gain_control = GetValue<bool>(agcIt->second);
+
+      auto ecIt = localMap.find(EncodableValue("echoCancellation"));
+      if (ecIt != localMap.end() && TypeIs<bool>(ecIt->second))
+        audio_options.echo_cancellation = GetValue<bool>(ecIt->second);
+
+      auto nsIt = localMap.find(EncodableValue("noiseSuppression"));
+      if (nsIt != localMap.end() && TypeIs<bool>(nsIt->second))
+        audio_options.noise_suppression = GetValue<bool>(nsIt->second);
     }
   }
 
@@ -151,7 +165,9 @@ void FlutterMediaStream::GetUserAudio(const EncodableMap& constraints,
     }
 
     scoped_refptr<RTCAudioSource> source =
-        base_->factory_->CreateAudioSource("audio_input");
+        base_->factory_->CreateAudioSource("audio_input",
+                                           RTCAudioSource::SourceType::kMicrophone,
+                                           audio_options);
     std::string uuid = base_->GenerateUUID();
     scoped_refptr<RTCAudioTrack> track =
         base_->factory_->CreateAudioTrack(source, uuid.c_str());
